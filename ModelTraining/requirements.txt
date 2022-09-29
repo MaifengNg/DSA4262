@@ -1,0 +1,4 @@
+pandas
+pylint
+autopep8
+mypy
