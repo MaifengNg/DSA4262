@@ -99,10 +99,11 @@ if __name__ == "__main__":
                         default='',
                         metavar='path for to save model',
                         help='Path for to save model')
-
-    JSON_DATA_PATH = argparse.data
-    JSON_INFO_PATH = argparse.label
-    PATH_SAVE_MODEL = argparse.model_dir
+                        
+    args = parser.parse_args()
+    JSON_DATA_PATH = args.data
+    JSON_INFO_PATH = args.label
+    PATH_SAVE_MODEL = args.model_dir
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
     JSON_DATA_PATH = f'{dir_path}{JSON_DATA_PATH}'

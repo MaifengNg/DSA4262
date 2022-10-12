@@ -50,9 +50,10 @@ if __name__ == "__main__":
                         metavar='path to save results',
                         help='Path to save results')
 
-    TEST_DATA_PATH = argparse.data
-    PATH_MODEL = argparse.model_dir
-    PATH_SAVE_RESULTS = argparse.save
+    args = parser.parse_args()
+    TEST_DATA_PATH = args.data
+    PATH_MODEL = args.model_dir
+    PATH_SAVE_RESULTS = args.save
 
     PATH_MODEl = f'{dir_path}{PATH_MODEL}'
     PATH_TEST_FILE = f'{dir_path}{TEST_DATA_PATH}'
