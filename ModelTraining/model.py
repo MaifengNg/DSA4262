@@ -1,5 +1,5 @@
 """
-model.py serves as a utility module for DSA4262
+model.py serves as a scrip to train a logistic regression model
 """
 import os
 import pickle
@@ -10,6 +10,7 @@ from sklearn.metrics import classification_report
 from sklearn.utils import resample
 from utils import load_data_json_file
 from utils import load_info_json_file
+import argparse
 
 
 def concat_two_dataframe(df_1: pd.DataFrame, df_2: pd.DataFrame) -> pd.DataFrame:
@@ -80,19 +81,39 @@ def train_save_model(data_frame: pd.DataFrame, path_to_save: str) -> None:
     print(classification_report(y_test, y_pred))
     pickle.dump(logreg_model, open(path_to_save, 'wb'))
 
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Train prediction model')
+
+    parser.add_argument('--data', required=True,
+                        default='',
+                        metavar='path for data json file',
+                        help='Json data file')
+
+    parser.add_argument('--label', required=True,
+                        default='',
+                        metavar='path for data info file',
+                        help='Info data file')
+
+    parser.add_argument('--model_dir', required=True,
+                        default='',
+                        metavar='path for to save model',
+                        help='Path for to save model')
+
+    JSON_DATA_PATH = argparse.data
+    JSON_INFO_PATH = argparse.label
+    PATH_SAVE_MODEL = argparse.model_dir
+
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    JSON_DATA_PATH = f'{dir_path}/Data/data.json'
+    JSON_DATA_PATH = f'{dir_path}{JSON_DATA_PATH}'
     json_data_dataframe = load_data_json_file(JSON_DATA_PATH)
 
-    JSON_INFO_PATH = f'{dir_path}/Data/data.info'
+    JSON_INFO_PATH = f'{dir_path}{JSON_INFO_PATH}'
     data_info_dataframe = load_info_json_file(JSON_INFO_PATH)
 
     concat_dataframe = concat_two_dataframe(
         data_info_dataframe, json_data_dataframe)
-    PATH_SAVE = f'{dir_path}/Data/data_processed.csv'
-    concat_dataframe.to_csv(PATH_SAVE, index=False)
 
     upsampled_dataframe = upsample_dataframe(concat_dataframe)
-    PATH_SAVE_MODEL = f'{dir_path}/Data/logreg_model.sav'
+    PATH_SAVE_MODEL = f'{dir_path}{PATH_SAVE_MODEL}/logreg_model.sav'
     train_save_model(upsampled_dataframe, PATH_SAVE_MODEL)

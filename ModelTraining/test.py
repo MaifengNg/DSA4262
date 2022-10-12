@@ -1,10 +1,11 @@
 """
-test.py serves as a utility module for DSA4262
+test.py serves as a script to test the logistic model on unseen test data
 """
 import os
 import pickle
 import pandas as pd
 from utils import load_data_json_file
+import argparse
 
 
 def predict_model_results(path_model: str, path_to_test_file: str,  path_save_results: str) -> None:
@@ -33,7 +34,27 @@ def predict_model_results(path_model: str, path_to_test_file: str,  path_save_re
 
 if __name__ == "__main__":
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    PATH_MODEl = f'{dir_path}/Data/model.sav'
-    PATH_TEST_FILE = f'{dir_path}/Data/data.json'
-    PATH_SAVE_RESULTS = f'{dir_path}/Data/results.csv'
+    parser = argparse.ArgumentParser(description='Test model on new data')
+    parser.add_argument('--data', required=True,
+                        default='',
+                        metavar='path for data json file',
+                        help='Json data file')
+
+    parser.add_argument('--model_dir', required=True,
+                        default='',
+                        metavar='path for to save model',
+                        help='Path for to save model')
+
+    parser.add_argument('--save', required=True,
+                        default='',
+                        metavar='path to save results',
+                        help='Path to save results')
+
+    TEST_DATA_PATH = argparse.data
+    PATH_MODEL = argparse.model_dir
+    PATH_SAVE_RESULTS = argparse.save
+
+    PATH_MODEl = f'{dir_path}{PATH_MODEL}'
+    PATH_TEST_FILE = f'{dir_path}{TEST_DATA_PATH}'
+    PATH_SAVE_RESULTS = f'{dir_path}{PATH_SAVE_RESULTS}/results.csv'
     predict_model_results(PATH_MODEl, PATH_TEST_FILE, PATH_SAVE_RESULTS)
