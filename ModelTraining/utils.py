@@ -1,12 +1,9 @@
 """
 utils.py serves as a utility module for DSA4262
 """
+from ast import List
 import json
-import pickle
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
 from sklearn.utils import resample
 
 
@@ -35,6 +32,8 @@ def load_data_json_file(file_path: str) -> pd.DataFrame:
                     json_position_within_transcript = json_transcript[position_within_transcript]
 
                     for combined_nucleotides in json_position_within_transcript:
+                        current_row_transcript_position_features_list.append(
+                            combined_nucleotides)
                         nested_list_of_features = json_position_within_transcript[
                             combined_nucleotides]
                         mean_list_of_features = [0] * 9
@@ -53,15 +52,45 @@ def load_data_json_file(file_path: str) -> pd.DataFrame:
                             mean_list_of_features)
             json_nested_lists.append(
                 current_row_transcript_position_features_list)
-
         df_from_json = pd.DataFrame(json_nested_lists, columns=[
-            'transcript_id', 'transcript_position',
+            'transcript_id', 'transcript_position', 'nucleotides',
             'dwelling_time_before', 'sd_before', 'mean_before',
             'dwelling_time_current', 'sd_current', 'mean_current',
             'dwelling_time_after', 'sd_after', 'mean_after']
         )
 
+        nucleotide_column = process_nucleotide_column(df_from_json)
+        df_from_json = df_from_json.drop('nucleotides', axis=1)
+        df_from_json = pd.concat([df_from_json, nucleotide_column], axis=1)
+        df_from_json['transcript_position'] = df_from_json['transcript_position'].astype(
+            object)
+
         return df_from_json
+
+
+def process_nucleotide_column(data_frame: pd.DataFrame) -> pd.DataFrame:
+    """
+    Returns a pandas dataframe after processing the nucleotides column.
+
+    :param data_frame pd.DataFrame
+    :return pandas dataframe
+    """
+    nucleotides_column = data_frame['nucleotides']
+    nucleotides_previous = nucleotides_column.str[:5]
+    nucleotides_current = nucleotides_column.str[1:6]
+    nucleotides_next = nucleotides_column.str[2:]
+    processed_nucleotides = pd.concat([
+        nucleotides_previous,
+        nucleotides_current,
+        nucleotides_next],
+        axis=1)
+    processed_nucleotides = pd.DataFrame(processed_nucleotides)
+    processed_nucleotides.columns = [
+        'nucleotide_before',
+        'nucleotide_current',
+        'nucleotide_after'
+    ]
+    return processed_nucleotides
 
 
 def load_info_json_file(file_path: str) -> pd.DataFrame:
@@ -72,7 +101,8 @@ def load_info_json_file(file_path: str) -> pd.DataFrame:
     :return pandas dataframe
     """
     dataframe = pd.read_csv(file_path, header=0)
-    dataframe = dataframe.drop('gene_id', axis=1)
+    dataframe['transcript_position'] = dataframe['transcript_position'].astype(
+        object)
     return dataframe
 
 
@@ -90,10 +120,22 @@ def concat_two_dataframe(df_1: pd.DataFrame, df_2: pd.DataFrame) -> pd.DataFrame
         df_2],
         axis=1,
         join="inner")
-    processed_dataframe = processed_dataframe.iloc[
-        :,
-        2:]
+    processed_dataframe = processed_dataframe.loc[:,
+                                                  ~processed_dataframe.columns.duplicated()]
     return processed_dataframe
+
+
+def drop_columns_from_dataframe(df_1: pd.DataFrame, columns: List(str)) -> pd.DataFrame:
+    """
+    Returns a pandas dataframe loaded by concating two dataframes
+    and removing the first two dataframe.
+
+    :param df_1 pd.DataFrame
+    :param List(str) columns: List of columns to drop
+    :return pandas dataframe
+    """
+    dataframe_with_columns_drop = df_1.drop(columns, axis=1)
+    return dataframe_with_columns_drop
 
 
 def upsample_dataframe(data_frame: pd.DataFrame) -> pd.DataFrame:
@@ -124,46 +166,35 @@ def upsample_dataframe(data_frame: pd.DataFrame) -> pd.DataFrame:
     return df_equalized
 
 
-def train_save_model(data_frame: pd.DataFrame, path_to_save: str) -> None:
+def one_hot_encode_nucleotide_dataframe(data_frame: pd.DataFrame) -> pd.DataFrame:
     """
-    :param pd.DataFrame data_frame: data_frame to upsample
-    :param str path_to_save: path to logistic regression model
-    :return None
+    Returns a dataframe with nucleotides one-hot encoded.
+
+    :param pd.DataFrame data_frame: data_frame to one-hot encode nucleotide
+    :return pandas dataframe
     """
-    X = data_frame.drop(
-        ['label', 'transcript_id', 'transcript_position'], axis=1)
-    y = data_frame['label']
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.1, random_state=0)
+    # Retrieve nucleotides_before, nucleotide_current, nucleotide_after
+    # for one-hot coding
+    nucleotides = data_frame[[
+        'nucleotide_before',
+        'nucleotide_current',
+        'nucleotide_after'
+    ]]
 
-    logreg_model = LogisticRegression(random_state=0)
-    logreg_model.fit(X_train, y_train)
-    y_pred = logreg_model.predict(X_test)
-    print(
-        f'Accuracy of logistic regression classifier on test set: {logreg_model.score(X_test, y_test)}')
-    print(classification_report(y_test, y_pred))
-    pickle.dump(logreg_model, open(path_to_save, 'wb'))
+    # One-hot encode nucleotide
+    nucleotides = pd.get_dummies(nucleotides)
 
+    # Removes nucleotides_before, nucleotide_current, nucleotide_after
+    data_frame = drop_columns_from_dataframe(
+        data_frame, [
+            'nucleotide_before',
+            'nucleotide_current',
+            'nucleotide_after'
+        ])
 
-def predict_model_results(path_model: str, path_to_test_file: str,  path_save_results: str) -> None:
-    """
-    :param str path_model: path to saved model
-    :param str path_to_test_file: path to test file
-    :param str path_save_results: path to save results
-    : return None
-    """
-    logreg_model = pickle.load(open(path_model, 'rb'))
-    data_frame = load_data_json_file(path_to_test_file)
-    data_frame_test = data_frame.drop(
-        ['transcript_id', 'transcript_position'], axis=1)
+    # Concat dataframe with nucleotides dropped and
+    # one-hot encoded
+    concat_dataframe = concat_two_dataframe(
+        data_frame, nucleotides)
 
-    predicted_prob = logreg_model.predict_proba(data_frame_test)
-    df_prob = pd.DataFrame(predicted_prob)[0]
-    df_prob.rename(columns={0: "score"})
-
-    df_final = pd.concat([
-        data_frame[['transcript_id', 'transcript_position']],
-        df_prob],
-        axis=1,
-        join="inner")
-    df_final.to_csv(path_save_results, index=False)
+    return concat_dataframe

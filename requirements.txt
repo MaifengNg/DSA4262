@@ -1,4 +1,5 @@
-pandas
-pylint
-autopep8
-mypy
+pandas==1.5.0
+pylint==2.15.3
+autopep8==1.7.0
+mypy==0.981
+scikit-learn==1.0

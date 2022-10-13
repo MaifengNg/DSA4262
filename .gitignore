@@ -130,3 +130,5 @@ dmypy.json
 
 # Ignore Data
 ModelTraining/Data
+ModelTraining/Results/results.csv
+ModelTraining/Model/model.sav
