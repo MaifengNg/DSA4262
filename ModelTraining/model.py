@@ -13,10 +13,10 @@ from utils import drop_columns_from_dataframe
 from utils import upsample_dataframe
 import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report
-from sklearn.utils import resample
 from sklearn import metrics
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GroupKFold
+from sklearn.preprocessing import StandardScaler
 
 
 def train_save_model(data_frame: pd.DataFrame, path_to_save: str) -> None:
@@ -29,13 +29,13 @@ def train_save_model(data_frame: pd.DataFrame, path_to_save: str) -> None:
     :return None
     """
     gene_id = data_frame['gene_id']
-    X_data = data_frame.drop('label', axis = 1)
+    X_data = data_frame.drop('label', axis=1)
     y_data = data_frame['label']
 
     gkf = GroupKFold(n_splits=3)
     train, test = next(gkf.split(X_data, y_data, groups=gene_id))
 
-    X_data = X_data.drop('gene_id', axis = 1)
+    X_data = X_data.drop('gene_id', axis=1)
     X_train = X_data.iloc[train, :]
     y_train = y_data.iloc[train]
     X_test = X_data.iloc[test]
@@ -46,12 +46,13 @@ def train_save_model(data_frame: pd.DataFrame, path_to_save: str) -> None:
     y_pred = logreg_model.predict(X_test)
     accuracy = logreg_model.score(X_test, y_test)
 
-    print(f'Accuracy of logistic regression classifier on test set: {accuracy}')
+    print(
+        f'Accuracy of logistic regression classifier on test set: {accuracy}')
     print(classification_report(y_test, y_pred))
     pickle.dump(logreg_model, open(path_to_save, 'wb'))
     print(f'Model saved at {path_to_save}')
 
-    y_pred_proba = logreg_model.predict_proba(X_test)[::,1]
+    y_pred_proba = logreg_model.predict_proba(X_test)[::, 1]
     fpr, tpr, _ = metrics.roc_curve(y_test,  y_pred_proba)
 
     # Plot ROC curve
@@ -79,10 +80,16 @@ if __name__ == "__main__":
                         metavar='path for to save model',
                         help='Path for to save model')
 
+    parser.add_argument('--standardize', required=False,
+                        default=False,
+                        metavar='path for data info file',
+                        help='Info data file')
+
     args = parser.parse_args()
     JSON_DATA_PATH = args.data
     JSON_INFO_PATH = args.label
     PATH_SAVE_MODEL = args.model_dir
+    STANDARDIZE_DATA = args.standardize
 
     """
     Start of data pre-processing
@@ -99,7 +106,7 @@ if __name__ == "__main__":
     print('Processing data')
     concat_dataframe = concat_two_dataframe(
         data_info_dataframe, json_data_dataframe)
-  
+
     data_frame_with_columns_dropped = drop_columns_from_dataframe(
         concat_dataframe, ['transcript_id', 'transcript_position'])
 
@@ -109,6 +116,23 @@ if __name__ == "__main__":
 
     # Upsample datafram to have the same sample size for both label 0 and 1
     upsampled_dataframe = upsample_dataframe(one_hot_encoded_dataframe)
+
+    if STANDARDIZE_DATA:
+        subset_data = upsampled_dataframe[['dwelling_time_before', 'sd_before', 'mean_before',
+                                           'dwelling_time_current', 'sd_current', 'mean_current',
+                                           'dwelling_time_after', 'sd_after', 'mean_after']]
+        scaler = StandardScaler()
+        scaled_data = scaler.fit_transform(subset_data)
+        scaled_data = pd.DataFrame(scaled_data, 
+            columns=[
+            'dwelling_time_before', 'sd_before', 'mean_before',
+            'dwelling_time_current', 'sd_current', 'mean_current',
+            'dwelling_time_after', 'sd_after', 'mean_after'])
+        upsampled_dataframe[
+            ['dwelling_time_before', 'sd_before', 'mean_before',
+            'dwelling_time_current', 'sd_current', 'mean_current',
+            'dwelling_time_after', 'sd_after', 'mean_after']] = scaled_data
+
     print('Done processing data')
     """
     End of data pre-processing
