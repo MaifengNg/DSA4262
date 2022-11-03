@@ -60,14 +60,20 @@ if __name__ == "__main__":
                         metavar='path to save results',
                         help='Path to save results')
 
+    parser.add_argument('--save_file_name', required=False,
+                        default='results',
+                        metavar='path to save results',
+                        help='Path to save results')
+
     args = parser.parse_args()
     TEST_DATA_PATH = args.data
     PATH_MODEL = args.model_dir
     PATH_SAVE_RESULTS = args.save
+    FILE_NAME = args.save_file_name
 
     PATH_MODEl = f'{dir_path}{PATH_MODEL}'
     PATH_TEST_FILE = f'{dir_path}{TEST_DATA_PATH}'
     print(f'Test data from {PATH_TEST_FILE}')
 
-    PATH_SAVE_RESULTS = f'{dir_path}{PATH_SAVE_RESULTS}/results.csv'
+    PATH_SAVE_RESULTS = f'{dir_path}{PATH_SAVE_RESULTS}/{FILE_NAME}.csv'
     predict_model_results(PATH_MODEl, PATH_TEST_FILE, PATH_SAVE_RESULTS)
