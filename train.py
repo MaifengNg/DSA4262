@@ -95,6 +95,7 @@ if __name__ == "__main__":
     Start of data pre-processing
     """
     dir_path = os.path.dirname(os.path.realpath(__file__))
+    print(dir_path)
     JSON_DATA_PATH = f'{dir_path}{JSON_DATA_PATH}'
     print(f'Training data from {JSON_DATA_PATH}')
     json_data_dataframe = load_data_json_file(JSON_DATA_PATH)
@@ -138,4 +139,4 @@ if __name__ == "__main__":
     End of data pre-processing
     """
     PATH_SAVE_MODEL = f'{dir_path}{PATH_SAVE_MODEL}/model.sav'
-    train_save_model(upsampled_dataframe, PATH_SAVE_MODEL)
+    # train_save_model(upsampled_dataframe, PATH_SAVE_MODEL)

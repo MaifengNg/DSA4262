@@ -129,9 +129,7 @@ dmypy.json
 .pyre/
 
 # Ignore Data
-ModelTraining/Data
-ModelTraining/Results/results.csv
-ModelTraining/Model/model.sav
+Data
 
 # Ignore Results
 Results
