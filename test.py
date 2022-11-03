@@ -27,7 +27,6 @@ def predict_model_results(path_model: str, path_to_test_file: str,  path_save_re
         ['transcript_id', 'transcript_position'], axis=1)
     data_frame_test = one_hot_encode_nucleotide_dataframe(
         data_frame_test)
-    print(data_frame_test.head())
     # Predict score and save results
     predicted_prob = logreg_model.predict_proba(data_frame_test)
     df_prob = pd.DataFrame(predicted_prob)[1]
