@@ -47,13 +47,15 @@ There are 3 required arguments to test a trained classifier.
 3. save: The directory to save the results 
 
 There is a 4th optional argument to train a classifier.
-4. save_file_name: The file name to save the results of the classification.
+4. save_file_name: The file name to save the results of the classification. The file extension has been excluded. Do not include it.
 
 Below is an example of how to run the test.py script.
-python3 test.py --data /Sample/dataset3.json --model_dir /Model/model.sav --save /Results --save_file_name dataset3
+python3 test.py --data /Sample/sample.json --model_dir /Model/model.sav --save /Results --save_file_name sample
 ```
 
 ### Testing the model on a sample data
 ```
-The command python3 test.py --data /Sample/dataset3.json --model_dir /Model/model.sav --save /Results --save_file_name dataset3 will run the model on the dataset3.json sample data.
+The command 
+python3 test.py --data /Sample/sample.json --model_dir /Model/model.sav --save /Results --save_file_name sample 
+will run the model on the sample.json sample data.
 ```
