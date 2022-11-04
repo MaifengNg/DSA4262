@@ -139,4 +139,4 @@ if __name__ == "__main__":
     End of data pre-processing
     """
     PATH_SAVE_MODEL = f'{dir_path}{PATH_SAVE_MODEL}/model.sav'
-    # train_save_model(upsampled_dataframe, PATH_SAVE_MODEL)
+    train_save_model(upsampled_dataframe, PATH_SAVE_MODEL)

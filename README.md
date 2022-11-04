@@ -7,11 +7,13 @@
 Git clone repository to local machine
 ```
 
-### Step 2: Turn on python3 virtual environment
+### Step 2: Turn on python3 virtual environment*
 ```
 Turn on python3 virtual environment
 
 source venv/bin/activate
+
+Install python virtual environment beforehand
 ```
 
 ### Step 3: Install requirements
@@ -58,4 +60,11 @@ python3 test.py --data /Sample/sample.json --model_dir /Model/model.sav --save /
 The command 
 python3 test.py --data /Sample/sample.json --model_dir /Model/model.sav --save /Results --save_file_name sample 
 will run the model on the sample.json sample data.
+```
+
+
+## Docker solution
+```
+If you have docker installed, u can run the command `bash start_script.sh`.
+This bash script helps u run the test.py script on the sample.json data.
 ```
