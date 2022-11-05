@@ -17,6 +17,5 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 
-# run python detect_new.py
-# CMD ["python", "test.py", "--data", "/Sample/sample.json", "--model_dir", "/Model/model.sav",  "--save", "/Results",  "--save_file_name", "results_sample"]
+# run python train.py
 CMD ["python", "train.py", "--data", "/Data/data.json", "--model_dir", "/Model",  "--label", "/Data/data.info"]

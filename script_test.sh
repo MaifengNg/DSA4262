@@ -1,7 +1,7 @@
 #!/bin/sh -v
 
 echo 'building docker image'
-docker build -f Dockerfile -t rnaclassifier .
+docker build -f Test.Dockerfile -t rnaclassifier .
 wait
 
 echo 'running rnaclassifiercontainer container'

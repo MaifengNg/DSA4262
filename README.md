@@ -63,6 +63,8 @@ will run the model on the sample.json sample data.
 
 ## Docker solution
 ```
-If you have docker installed, you can run the command `bash start_script.sh`.
+If you have docker installed, you can run the command `bash script_test.sh`.
 This bash script helps you run the test.py script on the sample.json data.
+
+If you want to run the train.py script using docker, you can run the command `bash script_train.sh`.
 ```

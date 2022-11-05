@@ -12,7 +12,7 @@ from utils import concat_two_dataframe
 from utils import drop_columns_from_dataframe
 from utils import upsample_dataframe
 import matplotlib.pyplot as plt
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, f1_score, precision_score, roc_auc_score, recall_score
+from sklearn.metrics import confusion_matrix, accuracy_score, f1_score, precision_score, roc_auc_score, recall_score
 from sklearn import metrics
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GroupKFold
@@ -53,6 +53,7 @@ def train_save_model(data_frame: pd.DataFrame, path_to_save: str) -> None:
     confusionMatrix = pd.DataFrame(confusion_matrix(y_pred, y_test))
     confusionMatrix.columns = ['True Y=0','True Y=1']
     confusionMatrix.index = ['Predicted Y=0','Predicted Y=1']
+    print(confusionMatrix)
     specificity = confusionMatrix.iloc[0, 0]/(confusionMatrix.iloc[0, 0] + confusionMatrix.iloc[1, 0])
     print("Accuracy:",round(accuracy_score(y_test, y_pred),4))
     print('Precision:', round(precision_score(y_test, y_pred),4))
