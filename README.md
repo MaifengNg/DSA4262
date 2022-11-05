@@ -7,13 +7,11 @@
 Git clone repository to local machine
 ```
 
-### Step 2: Turn on python3 virtual environment*
+### Step 2(optional): Install pip3
 ```
-Turn on python3 virtual environment
+Install pip3 in order to install requirements to run the test script.
 
-source venv/bin/activate
-
-Install python virtual environment beforehand
+sudo apt install python3-pip
 ```
 
 ### Step 3: Install requirements
@@ -65,6 +63,6 @@ will run the model on the sample.json sample data.
 
 ## Docker solution
 ```
-If you have docker installed, u can run the command `bash start_script.sh`.
-This bash script helps u run the test.py script on the sample.json data.
+If you have docker installed, you can run the command `bash start_script.sh`.
+This bash script helps you run the test.py script on the sample.json data.
 ```

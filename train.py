@@ -12,7 +12,7 @@ from utils import concat_two_dataframe
 from utils import drop_columns_from_dataframe
 from utils import upsample_dataframe
 import matplotlib.pyplot as plt
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, f1_score, precision_score, roc_auc_score, recall_score
 from sklearn import metrics
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GroupKFold
@@ -46,9 +46,21 @@ def train_save_model(data_frame: pd.DataFrame, path_to_save: str) -> None:
     y_pred = logreg_model.predict(X_test)
     accuracy = logreg_model.score(X_test, y_test)
 
-    print(
-        f'Accuracy of logistic regression classifier on test set: {accuracy}')
-    print(classification_report(y_test, y_pred))
+    # print(
+    #     f'Accuracy of logistic regression classifier on test set: {accuracy}')
+    # print(classification_report(y_test, y_pred))
+
+    confusionMatrix = pd.DataFrame(confusion_matrix(y_pred, y_test))
+    confusionMatrix.columns = ['True Y=0','True Y=1']
+    confusionMatrix.index = ['Predicted Y=0','Predicted Y=1']
+    specificity = confusionMatrix.iloc[0, 0]/(confusionMatrix.iloc[0, 0] + confusionMatrix.iloc[1, 0])
+    print("Accuracy:",round(accuracy_score(y_test, y_pred),4))
+    print('Precision:', round(precision_score(y_test, y_pred),4))
+    print('Specificity:', round(specificity,4))
+    print('Recall',round(recall_score(y_test,y_pred),4))
+    print('F1-Score:', round(f1_score(y_test,y_pred),4))
+    print('AUC:',round(roc_auc_score(y_test, y_pred),4))
+
     pickle.dump(logreg_model, open(path_to_save, 'wb'))
     print(f'Model saved at {path_to_save}')
 
