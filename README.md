@@ -4,7 +4,9 @@
 
 ### Step 1: Clone repository to local machine
 ```
-Git clone repository to local machine
+Git clone repository to local machine.
+
+git clone https://github.com/MaifengNg/DSA4262.git
 ```
 
 ### Step 2(optional): Install pip3
